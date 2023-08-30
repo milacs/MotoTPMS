@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="20sp"
+    android:paddingRight="20sp"
+    android:layout_gravity="center"
+    android:showDividers="middle"
+    android:divider="@drawable/widget_divider">
+
+        <ImageView
+            android:layout_width="150sp"
+            android:layout_height="match_parent"
+            android:src="@drawable/front_no_data"
+            android:layout_weight="0.5"/>
+
+        <ImageView
+            android:layout_width="150sp"
+            android:layout_height="match_parent"
+            android:src="@drawable/rear_no_data"
+            android:layout_weight="0.5"/>
+</LinearLayout>

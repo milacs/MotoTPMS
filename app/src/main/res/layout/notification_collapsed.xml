@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:gravity="top"
+    android:orientation="horizontal"
+    android:showDividers="middle"
+    android:divider="@drawable/empty_tall_divider">
+    <TextView
+        android:id="@+id/pressure_alert_collapsed"
+        style="@style/TextAppearance.Compat.Notification.Title"
+        android:textColor="@color/orange"
+        android:text="@string/pressure_warning"
+        android:textSize="18dp"
+        android:padding="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <ImageView
+        android:id="@+id/image_view_collapsed"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="10dp"
+
+        android:src="@drawable/front_no_data"
+        style="@style/TextAppearance.Compat.Notification"
+        android:scaleType="centerInside"/>
+</LinearLayout>
