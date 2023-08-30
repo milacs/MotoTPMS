@@ -385,6 +385,11 @@ fun TyreCard(type : String, mainViewModel : MainViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeView(mainViewModel: MainViewModel) {
+
+    val isServiceRunning = remember {
+        MotoTPMS.isServiceRunning
+    }
+
     MotoTPMSTheme {
         Scaffold(
             topBar = {
@@ -440,11 +445,14 @@ fun HomeView(mainViewModel: MainViewModel) {
                 )
             },
             content = {
-                if (!MotoTPMS.isServiceRunning.value)
-                    LinearProgressIndicator(modifier = Modifier
-                        .padding(top = 54.dp)
-                        .background(MaterialTheme.colorScheme.inversePrimary)
-                        .fillMaxWidth())
+                if (!isServiceRunning.value) {
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .padding(top = 54.dp)
+                            .background(MaterialTheme.colorScheme.inversePrimary)
+                            .fillMaxWidth()
+                    )
+                }
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
