@@ -39,11 +39,11 @@ class SensorCommServ : Service() {
     private val serviceReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == getString(string.broadcast_update_model)) {
-                viewModel?.refreshData(dataProvider)
+                viewModel?.refreshData()
             }
 
             if (intent?.action == getString(string.broadcast_erase_data)) {
-                viewModel?.clearData(dataProvider)
+                viewModel?.clearData()
 
                 sendBroadcast(Intent(getString(string.broadcast_update_model)))
             }
@@ -78,9 +78,9 @@ class SensorCommServ : Service() {
                 if (result.scanRecord != null) {
                     val processedData = BluetoothConnectionManager.processData(result.scanRecord!!.bytes, result.timestampNanos)
 
-                    dataProvider?.saveDeviceData(address, processedData)
+                    dataProvider?.saveValues(address, processedData)
 
-                    viewModel?.refreshData(dataProvider)
+                    viewModel?.refreshData()
                     sendBroadcast(Intent(getString(string.broadcast_update_model)))
 
                     if (!isInteractive() || !MotoTPMS.isActivityVisible) {
@@ -227,7 +227,7 @@ class SensorCommServ : Service() {
 
         val mainViewModel = MainViewModel()
         viewModel = mainViewModel
-        viewModel?.init(dataProvider)
+        viewModel?.init()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

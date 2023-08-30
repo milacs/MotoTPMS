@@ -2,7 +2,6 @@ package com.mila.mototpms
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
@@ -84,12 +83,11 @@ class MainActivity : ComponentActivity() {
 
     private val permissionsRequestCode = 25
     private var mainViewModel : MainViewModel? = null
-    private var dataProvider : DataProvider? = null
 
     private val mainReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == getString(string.broadcast_update_model)) {
-                mainViewModel?.refreshData(dataProvider)
+                mainViewModel?.refreshData()
             }
         }
     }
@@ -98,10 +96,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         mBluetoothAdapter = (this.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
-        dataProvider = DataProvider(this, getString(string.preference_file_key), Context.MODE_PRIVATE)
+        MotoTPMS.dataProvider = DataProvider(this, getString(string.preference_file_key), Context.MODE_PRIVATE)
 
         mainViewModel = MainViewModel()
-        mainViewModel!!.init(dataProvider!!)
+        mainViewModel!!.init()
 
         val managePermissions = ManagePermissions(this, listOfPermissions, permissionsRequestCode)
         managePermissions.checkPermissions(callback = fun() {
@@ -143,7 +141,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        mainViewModel?.refreshData(dataProvider)
+        mainViewModel?.refreshData()
         MotoTPMS.activityResumed()
     }
 
@@ -193,7 +191,7 @@ fun RearTyreCard(mainViewModel: MainViewModel) {
 @Composable
 fun TyreCard(type : String, mainViewModel : MainViewModel) {
     val context = LocalContext.current
-    val pairIntent: Intent = Intent("START_PAIR_DEVICES_LIST").putExtra("sensor_position", type)
+    val pairIntent: Intent = Intent(stringResource(string.start_pair_sensor_activity)).putExtra("sensor_position", type)
 
     val title = if (type=="front") stringResource(id = string.frontTitle) else stringResource(id= string.rearTitle)
     val boundAddress = remember {
@@ -387,8 +385,6 @@ fun TyreCard(type : String, mainViewModel : MainViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeView(mainViewModel: MainViewModel) {
-    val context = LocalContext.current as Activity
-
     MotoTPMSTheme {
         Scaffold(
             topBar = {
@@ -429,10 +425,16 @@ fun HomeView(mainViewModel: MainViewModel) {
                     ),
                     actions = {
                         IconButton(
-                            onClick = { eraseData(context) },
+                            onClick = { eraseData(mainViewModel) },
                             modifier = Modifier.fillMaxHeight()
                         ) {
                             Icon(Icons.Filled.Delete, null)
+                        }
+                        IconButton(
+                            onClick = { swapSensors(mainViewModel) },
+                            modifier = Modifier.fillMaxHeight()
+                        ) {
+                            Icon(painterResource(id = drawable.swap_icon), null)
                         }
                     }
                 )
@@ -456,7 +458,10 @@ fun HomeView(mainViewModel: MainViewModel) {
     }
 }
 
-fun eraseData(activity: Activity) {
-    val intent = Intent(activity.getString(string.broadcast_erase_data))
-    activity.sendBroadcast(intent)
+fun swapSensors(viewModel: MainViewModel) {
+    viewModel.swapSensors()
+}
+
+fun eraseData(viewModel: MainViewModel) {
+    viewModel.clearData()   
 }

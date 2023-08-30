@@ -20,8 +20,9 @@ class MotoTPMS : Application() {
 
         var isActivityVisible = false
             private set
-
         var isServiceRunning = mutableStateOf(false)
             private set
+
+        var dataProvider: DataProvider? = null
     }
 }

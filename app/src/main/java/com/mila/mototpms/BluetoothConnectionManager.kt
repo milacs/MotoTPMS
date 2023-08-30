@@ -11,21 +11,22 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.util.Log
+import android.view.MotionEvent
 import android.widget.Toast
-import androidx.core.view.MotionEventCompat
+import kotlin.math.abs
 
 private const val TAG_BT_COMM = "BluetoothConnectionManager"
 
-class BluetoothConnectionManager(_context : Context) {
+class BluetoothConnectionManager(context : Context) {
 
-    private var mBluetoothAdapter: BluetoothAdapter? = (_context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
+    private var mBluetoothAdapter: BluetoothAdapter? = (context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
     private var bluetoothLeScanner : BluetoothLeScanner? = mBluetoothAdapter?.bluetoothLeScanner
-    private var context = _context
+    private var context = context
     private var pairViewModel = PairDevicesViewModel()
 
     companion object {
         private val HEX_ARRAY = "0123456789ABCDEF".toCharArray()
-        const val USER_MASK = 65535
+        private const val USER_MASK = 65535
         private var auchCRCHi = byteArrayOf(
             -115,
             113,
@@ -544,7 +545,7 @@ class BluetoothConnectionManager(_context : Context) {
         )
 
         fun processData(bytes: ByteArray, nanos: Long): HashMap<String, Any>? {
-            Log.i(TAG_BT_COMM, "BYTES: ${bytes}")
+            Log.i(TAG_BT_COMM, "BYTES: $bytes")
 
             val processedBytes = ByteArray(11)
             if (bytes[1].toInt() == 3) {
@@ -553,7 +554,7 @@ class BluetoothConnectionManager(_context : Context) {
                 var start = 0
                 var end = 15
                 while (start < end) {
-                    processingFactors[start] = bytes.get(start)
+                    processingFactors[start] = bytes[start]
                     start++
                     end = 15
                 }
@@ -566,19 +567,17 @@ class BluetoothConnectionManager(_context : Context) {
                     processingFactors,
                     0,
                     15,
-                    false,
-                    false,
-                    0
+                    ref_in = false,
+                    ref_out = false,
+                    xor_out = 0
                 )
                 Log.e("BT Data Processing", "BR crc:" + String.format(
                     "%04X--crccal%02X%02X-%02X%02X",
                     Integer.valueOf(lda),
                     java.lang.Byte.valueOf(
-                        auchCRCHi.get(
-                            lda shr 8 and 255
-                        )
+                        auchCRCHi[lda shr 8 and 255]
                     ),
-                    java.lang.Byte.valueOf(auchCRCLo.get(lda and 255)),
+                    java.lang.Byte.valueOf(auchCRCLo[lda and 255]),
                     java.lang.Byte.valueOf(
                         bytes[15]
                     ),
@@ -597,18 +596,16 @@ class BluetoothConnectionManager(_context : Context) {
                 }
             }
 
-            val volt = processedBytes.get(7).toInt()
-            var temp = processedBytes.get(8).toInt()
-            var prevTemp = 0
-            var psi = processedBytes.get(9)
-                .toInt() shl 8 and MotionEventCompat.ACTION_POINTER_INDEX_MASK or (processedBytes.get(
-                10
-            ).toInt() and 255)
+            val volt = processedBytes[7].toInt()
+            var temp = processedBytes[8].toInt()
+            val prevTemp = 0
+            var psi = processedBytes[9]
+                .toInt() shl 8 and MotionEvent.ACTION_POINTER_INDEX_MASK or (processedBytes[10].toInt() and 255)
             if (psi < 148) {
                 psi = 146
             }
-            val st = processedBytes.get(6).toInt()
-            if (temp <= 40 && Math.abs(temp - prevTemp) <= 6) {
+            val st = processedBytes[6].toInt()
+            if (temp <= 40 && abs(temp - prevTemp) <= 6) {
                 val tt: Int = (temp + prevTemp) / 2
                 temp = tt
             }
@@ -646,7 +643,7 @@ class BluetoothConnectionManager(_context : Context) {
 
             var i: Int = offset
             while (i < offset + length && i < data.size) {
-                val b: Byte = data.get(i)
+                val b: Byte = data[i]
                 for (j in 0..7) {
                     val k = if (ref_in) 7 - j else j
                     val bit = b.toInt() shr 7 - k and 1 == 1
@@ -664,7 +661,7 @@ class BluetoothConnectionManager(_context : Context) {
             } else crc xor xor_out and USER_MASK
         }
 
-        private fun bytesToHex(bytes: ByteArray): Any? {
+        private fun bytesToHex(bytes: ByteArray): Any {
             val hexChars = CharArray(bytes.size * 2)
             for (j in bytes.indices) {
                 val v = bytes[j].toInt() and 255

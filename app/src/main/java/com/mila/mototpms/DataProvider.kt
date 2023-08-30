@@ -23,7 +23,7 @@ class DataProvider(context: Context, name: String, mode: Int) {
 
     fun savePairedDevice(sensorPosition: String?, address: String?, processedData: HashMap<String, Any>?) {
         Log.i(TAG_PAIR, "Saving $address for ${sensorPosition}Address")
-        saveDeviceData(address, processedData)
+        saveValues(address, processedData)
         editor.putString("${sensorPosition}Address", address)
         val commit = editor.commit()
 
@@ -32,7 +32,7 @@ class DataProvider(context: Context, name: String, mode: Int) {
         }
     }
 
-    fun saveDeviceData(key: String?, value: String?) {
+    fun saveValue(key: String?, value: String?) {
         Log.i(TAG_DATA_PROVIDER, "Saving $key = $value")
         val editor = sharedPrefs.edit()
         editor?.putString(key, value)
@@ -43,18 +43,29 @@ class DataProvider(context: Context, name: String, mode: Int) {
         }
     }
 
-    fun saveDeviceData(address: String?, processedData: HashMap<String, Any>?) {
+    fun saveValues(address: String?, processedData: HashMap<String, Any>?) {
         val numberFormat = NumberFormat.getNumberInstance(Locale.US)
         numberFormat.maximumFractionDigits = 1
 
-        saveDeviceData("${address}Temperature", processedData?.get("temperature").toString())
-        saveDeviceData("${address}Pressure", numberFormat.format(processedData?.get("pressure")))
-        saveDeviceData("${address}Voltage", numberFormat.format(processedData?.get("voltage")))
-        saveDeviceData("${address}ST", processedData?.get("st").toString())
-        saveDeviceData("${address}Nanos", processedData?.get("nanos").toString())
+        saveValue("${address}Temperature", processedData?.get("temperature").toString())
+        saveValue("${address}Pressure", numberFormat.format(processedData?.get("pressure")))
+        saveValue("${address}Voltage", numberFormat.format(processedData?.get("voltage")))
+        saveValue("${address}ST", processedData?.get("st").toString())
+        saveValue("${address}Nanos", processedData?.get("nanos").toString())
     }
 
     fun getValue(key: String): String {
         return sharedPrefs.getString(key, "").toString()
+    }
+
+    fun isPaired(address: String): String {
+        val frontAddress = getValue("frontAddress")
+        val rearAddress = getValue("rearAddress")
+
+        if (address == frontAddress)
+            return "front"
+        else if (address == rearAddress)
+            return "rear"
+        return ""
     }
 }

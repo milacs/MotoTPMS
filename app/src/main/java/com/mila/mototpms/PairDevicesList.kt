@@ -14,6 +14,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,7 +30,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
@@ -142,36 +145,59 @@ fun ListOfDevices(
             )
         },
         content = {
-            LinearProgressIndicator(modifier = Modifier.padding(top=54.dp).background(MaterialTheme.colorScheme.inversePrimary).fillMaxWidth())
+            LinearProgressIndicator(modifier = Modifier
+                .padding(top = 54.dp)
+                .background(MaterialTheme.colorScheme.inversePrimary)
+                .fillMaxWidth())
             LazyColumn(
                 modifier = Modifier.padding(top = 58.dp)) {
                 itemsIndexed(devices) {
                     index, device ->
-                    Column(modifier = Modifier
+                    Row(modifier = Modifier
                         .background(color = if (index % 2 == 1) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.tertiaryContainer)
-                        .fillMaxWidth()
                         .border(
                             width = 1.dp,
                             color = Color.Transparent,
                             shape = RoundedCornerShape(10f)
                         )
                         .clickable {
-                                savePairedDevice(context, dataProvider, sensorPosition, device)
+                            savePairedDevice(context, dataProvider, sensorPosition, device)
                         }
-                        .padding(10.dp)) {
-                        Text(text= device.name,
-                            style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold, color = if (index % 2 == 1) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onTertiaryContainer),
-                            modifier = Modifier.fillMaxWidth())
-                        Text(text=device.address,
-                            style = TextStyle(fontSize = 16.sp, color = if (index % 2 == 1) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onTertiaryContainer),
-                            modifier = Modifier
-                                .padding(top = 5.dp)
-                                .fillMaxWidth())
-                        Text(text=stringResource(id = string.signalRSSI) +  device.rssi,
-                            style = TextStyle(fontSize = 16.sp, color = if (index % 2 == 1) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onTertiaryContainer),
-                            modifier = Modifier
-                                .padding(top = 5.dp)
-                                .fillMaxWidth())
+                        .padding(10.dp)
+                        .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically) {
+                        Column(modifier = Modifier
+                            .fillMaxWidth(0.7f)) {
+                            Text(text= device.name,
+                                style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold, color = if (index % 2 == 1) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onTertiaryContainer),
+                                modifier = Modifier.fillMaxWidth())
+                            Text(text=device.address,
+                                style = TextStyle(fontSize = 16.sp, color = if (index % 2 == 1) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onTertiaryContainer),
+                                modifier = Modifier
+                                    .padding(top = 5.dp)
+                                    .fillMaxWidth())
+                            Text(text=stringResource(id = string.signalRSSI) +  device.rssi,
+                                style = TextStyle(fontSize = 16.sp, color = if (index % 2 == 1) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onTertiaryContainer),
+                                modifier = Modifier
+                                    .padding(top = 5.dp)
+                                    .fillMaxWidth())
+                        }
+
+                        Column(modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                            .border(
+                                1.dp,
+                                MaterialTheme.colorScheme.inversePrimary,
+                                RoundedCornerShape(10.dp)
+                            )
+                            .background(MaterialTheme.colorScheme.inversePrimary),
+                            horizontalAlignment = Alignment.End){
+                            val pairedWith = dataProvider.isPaired(device.address)
+                            if (pairedWith == "front")
+                                Text(stringResource(id = string.front_tyre), modifier = Modifier.padding(10.dp))
+                            else if (pairedWith == "rear")
+                                Text(stringResource(id = string.rear_tyre), modifier = Modifier.padding(10.dp))
+                        }
                     }
                 }
             }

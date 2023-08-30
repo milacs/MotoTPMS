@@ -121,4 +121,7 @@
     <string name="pressure_warning">Alerta de pressão</string>
     <string name="widget_description">Monitorar pressão dos pneus na tela inicial.</string>
     <string name="pair_dialog_title">Parear sensor com este pneu?</string>
+    <string name="front_tyre">Dianteiro</string>
+    <string name="rear_tyre">Traseiro</string>
+    <string name="start_pair_sensor_activity">START_PAIR_DEVICES_LIST</string>
 </resources>

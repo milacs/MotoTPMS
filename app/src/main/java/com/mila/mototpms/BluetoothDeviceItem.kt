@@ -23,11 +23,11 @@ class BluetoothDeviceItem {
     }
 
     @SuppressLint("MissingPermission")
-    constructor(device: BluetoothDevice, _rssi: Int) {
+    constructor(device: BluetoothDevice, rssi: Int) {
         if (device.name != null) {
             name = device.name
         }
         address = device.address
-        rssi = _rssi
+        this.rssi = rssi
     }
 }

@@ -4,36 +4,36 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 
-const val TAG_VM = "MainViewModel"
-
 class MainViewModel : ViewModel() {
 
-    private var frontAddress = mutableStateOf("")
-    private var rearAddress = mutableStateOf("")
-    private var frontTemperature = mutableStateOf("")
-    private var rearTemperature = mutableStateOf("")
-    private var frontPressure = mutableStateOf("")
-    private var rearPressure = mutableStateOf("")
-    private var frontVoltage = mutableStateOf("")
-    private var rearVoltage = mutableStateOf("")
-    private var frontNanos = mutableStateOf("")
-    private var rearNanos = mutableStateOf("")
-
-    fun init(dataProvider: DataProvider?) {
-        frontAddress.value = dataProvider!!.getValue("frontAddress")
-        rearAddress.value = dataProvider!!.getValue("rearAddress")
-        frontTemperature.value = dataProvider!!.getValue("${frontAddress.value}Temperature")
-        rearTemperature.value = dataProvider!!.getValue("${rearAddress.value}Temperature")
-        frontPressure.value = dataProvider!!.getValue("${frontAddress.value}Pressure")
-        rearPressure.value = dataProvider!!.getValue("${rearAddress.value}Pressure")
-        frontVoltage.value = dataProvider!!.getValue("${frontAddress.value}Voltage")
-        rearVoltage.value = dataProvider!!.getValue("${rearAddress.value}Voltage")
-        frontNanos.value = dataProvider!!.getValue("${frontAddress.value}Nanos")
-        rearNanos.value = dataProvider!!.getValue("${rearAddress.value}Nanos")
+    companion object {
+        private var frontAddress = mutableStateOf("")
+        private var rearAddress = mutableStateOf("")
+        private var frontTemperature = mutableStateOf("")
+        private var rearTemperature = mutableStateOf("")
+        private var frontPressure = mutableStateOf("")
+        private var rearPressure = mutableStateOf("")
+        private var frontVoltage = mutableStateOf("")
+        private var rearVoltage = mutableStateOf("")
+        private var frontNanos = mutableStateOf("")
+        private var rearNanos = mutableStateOf("")
     }
 
-    fun refreshData(dataProvider: DataProvider?) {
-        init(dataProvider)
+    fun init() {
+        frontAddress.value = MotoTPMS.dataProvider!!.getValue("frontAddress")
+        rearAddress.value = MotoTPMS.dataProvider!!.getValue("rearAddress")
+        frontTemperature.value = MotoTPMS.dataProvider!!.getValue("${frontAddress.value}Temperature")
+        rearTemperature.value = MotoTPMS.dataProvider!!.getValue("${rearAddress.value}Temperature")
+        frontPressure.value = MotoTPMS.dataProvider!!.getValue("${frontAddress.value}Pressure")
+        rearPressure.value = MotoTPMS.dataProvider!!.getValue("${rearAddress.value}Pressure")
+        frontVoltage.value = MotoTPMS.dataProvider!!.getValue("${frontAddress.value}Voltage")
+        rearVoltage.value = MotoTPMS.dataProvider!!.getValue("${rearAddress.value}Voltage")
+        frontNanos.value = MotoTPMS.dataProvider!!.getValue("${frontAddress.value}Nanos")
+        rearNanos.value = MotoTPMS.dataProvider!!.getValue("${rearAddress.value}Nanos")
+    }
+
+    fun refreshData() {
+        init()
     }
 
     fun getFrontAddress(): MutableState<String> {
@@ -76,8 +76,18 @@ class MainViewModel : ViewModel() {
         return rearNanos
     }
 
-    fun clearData(dataProvider: DataProvider?) {
-        dataProvider!!.saveDeviceData("frontAddress", "")
-        dataProvider!!.saveDeviceData("rearAddress", "")
+    fun clearData() {
+        MotoTPMS.dataProvider!!.saveValue("frontAddress", "")
+        MotoTPMS.dataProvider!!.saveValue("rearAddress", "")
+    }
+
+    fun swapSensors() {
+        val dataProvider = MotoTPMS.dataProvider
+
+        val temp = dataProvider?.getValue("frontAddress")
+        dataProvider?.saveValue("frontAddress", dataProvider.getValue("rearAddress"))
+        dataProvider?.saveValue("rearAddress", temp)
+
+        refreshData()
     }
 }
