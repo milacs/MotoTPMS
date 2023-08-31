@@ -79,6 +79,8 @@ class MainViewModel : ViewModel() {
     fun clearData() {
         MotoTPMS.dataProvider!!.saveValue("frontAddress", "")
         MotoTPMS.dataProvider!!.saveValue("rearAddress", "")
+
+        refreshData()
     }
 
     fun swapSensors() {

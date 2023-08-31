@@ -7,7 +7,6 @@ import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -207,12 +206,10 @@ fun ListOfDevices(
 
 fun savePairedDevice(context: Context, dataProvider: DataProvider, sensorPosition: String?, device: BluetoothDeviceItem) {
     val activity = context as Activity
-    val intent = Intent(activity.getString(string.broadcast_update_model))
 
     val pairButton = { _: DialogInterface, _: Int ->
         dataProvider.savePairedDevice(sensorPosition, device.address, BluetoothConnectionManager.processData(
             device.data!!, device.nanos))
-        activity.sendBroadcast(intent)
         activity.finish()
     }
 

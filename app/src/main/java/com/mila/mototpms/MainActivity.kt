@@ -4,10 +4,8 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -84,14 +82,6 @@ class MainActivity : ComponentActivity() {
     private val permissionsRequestCode = 25
     private var mainViewModel : MainViewModel? = null
 
-    private val mainReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == getString(string.broadcast_update_model)) {
-                mainViewModel?.refreshData()
-            }
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -112,6 +102,8 @@ class MainActivity : ComponentActivity() {
                 Log.i("Bluetooth", "Enabled result arrived")
                 if (result.resultCode == RESULT_OK) {
                     Log.i("Bluetooth", "Enabled")
+                    SensorCommServ.serviceInstance?.startScanning()
+                    MotoTPMS.serviceStarted()
                 } else {
                     Log.i("Bluetooth", "Not enabled")
                 }
@@ -122,12 +114,6 @@ class MainActivity : ComponentActivity() {
             Handler(Looper.getMainLooper()).postDelayed({
                 requestBluetooth.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
             }, 3000)
-        }
-
-        val filters = ArrayList<IntentFilter>()
-        filters.add(IntentFilter(getString(string.broadcast_update_model)))
-        filters.forEach { filter ->
-            registerReceiver(mainReceiver, filter)
         }
 
 
@@ -162,8 +148,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        // Don't forget to unregister the ACTION_FOUND receiver.
-        unregisterReceiver(mainReceiver)
         SensorCommServ.stopService(this)
     }
 }
@@ -445,7 +429,7 @@ fun HomeView(mainViewModel: MainViewModel) {
                 )
             },
             content = {
-                if (!isServiceRunning.value) {
+                if (isServiceRunning.value == 0) {
                     LinearProgressIndicator(
                         modifier = Modifier
                             .padding(top = 54.dp)

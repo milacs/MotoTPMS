@@ -6,10 +6,8 @@ import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.app.Service
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.IBinder
 import android.os.PowerManager
 import android.util.Log
@@ -30,26 +28,9 @@ const val PRESSURE_HIGH = 42.0
 
 
 class SensorCommServ : Service() {
-    private var serviceInstance: SensorCommServ? = null
-
     private var viewModel: MainViewModel? = null
     private var btComm : BluetoothConnectionManager? = null
     private var dataProvider: DataProvider? = null
-
-    private val serviceReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == getString(string.broadcast_update_model)) {
-                viewModel?.refreshData()
-            }
-
-            if (intent?.action == getString(string.broadcast_erase_data)) {
-                viewModel?.clearData()
-
-                sendBroadcast(Intent(getString(string.broadcast_update_model)))
-            }
-
-        }
-    }
 
     private val leScanCallback: ScanCallback = object : ScanCallback() {
         @SuppressLint("MissingPermission")
@@ -79,7 +60,6 @@ class SensorCommServ : Service() {
                     val processedData = BluetoothConnectionManager.processData(result.scanRecord!!.bytes, result.timestampNanos)
 
                     dataProvider?.saveValues(address, processedData)
-
                     viewModel?.refreshData()
                     sendBroadcast(Intent(getString(string.broadcast_update_model)))
 
@@ -108,6 +88,7 @@ class SensorCommServ : Service() {
     }
 
     companion object {
+        var serviceInstance: SensorCommServ? = null
         fun startService(context: Context) {
             val startIntent = Intent(context, SensorCommServ::class.java)
             ContextCompat.startForegroundService(context, startIntent)
@@ -216,17 +197,9 @@ class SensorCommServ : Service() {
 
         startForeground(1, notification)
 
-        val filters = ArrayList<IntentFilter>()
-        filters.add(IntentFilter(getString(string.broadcast_update_model)))
-        filters.add(IntentFilter(getString(string.broadcast_erase_data)))
-        filters.forEach { filter ->
-            registerReceiver(serviceReceiver, filter, RECEIVER_NOT_EXPORTED)
-        }
-
         dataProvider = DataProvider(applicationContext, getString(string.preference_file_key), Context.MODE_PRIVATE)
 
-        val mainViewModel = MainViewModel()
-        viewModel = mainViewModel
+        viewModel = MainViewModel()
         viewModel?.init()
     }
 
@@ -235,14 +208,6 @@ class SensorCommServ : Service() {
 
         btComm = BluetoothConnectionManager(applicationContext)
 
-        if (btComm?.isBluetoothEnabled() == true) {
-            MotoTPMS.serviceStarted()
-            startScanning()
-
-        } else {
-            Log.i(TAG_SERVICE, "Bluetooth is not available")
-        }
-
         return result
     }
 
@@ -250,7 +215,6 @@ class SensorCommServ : Service() {
     override fun onDestroy() {
         super.onDestroy()
         btComm?.destroy(leScanCallback)
-        unregisterReceiver(serviceReceiver)
     }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -273,7 +237,7 @@ class SensorCommServ : Service() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun startScanning() {
+    fun startScanning() {
         android.bluetooth.le.ScanSettings.Builder()
             .setScanMode(android.bluetooth.le.ScanSettings.SCAN_MODE_LOW_LATENCY)
             .build()
