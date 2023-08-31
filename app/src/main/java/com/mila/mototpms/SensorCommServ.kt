@@ -206,8 +206,9 @@ class SensorCommServ : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val result = super.onStartCommand(intent, flags, startId)
 
-        btComm = BluetoothConnectionManager(applicationContext)
         MotoTPMS.serviceStarted()
+        btComm = BluetoothConnectionManager(applicationContext)
+        startScanning()
 
         return result
     }
@@ -238,12 +239,12 @@ class SensorCommServ : Service() {
     }
 
     @SuppressLint("MissingPermission")
-    fun startScanning() {
+    private fun startScanning() {
         android.bluetooth.le.ScanSettings.Builder()
             .setScanMode(android.bluetooth.le.ScanSettings.SCAN_MODE_LOW_LATENCY)
             .build()
 
-        btComm?.startScanning(leScanCallback)
+        btComm!!.startScanning(leScanCallback)
     }
 
     fun isInteractive (): Boolean {
