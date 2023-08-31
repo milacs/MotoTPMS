@@ -93,12 +93,11 @@ class MainActivity : ComponentActivity() {
 
         val managePermissions = ManagePermissions(this, listOfPermissions, permissionsRequestCode)
         managePermissions.checkPermissions(callback = fun() {
-            SensorCommServ.startService(this)
-
             val requestBluetooth = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 Log.i("Bluetooth", "Enabled result arrived")
                 if (result.resultCode == RESULT_OK) {
                     Log.i("Bluetooth", "Enabled")
+                    SensorCommServ.startService(this)
                 } else {
                     Log.i("Bluetooth", "Not enabled")
                 }
@@ -106,11 +105,9 @@ class MainActivity : ComponentActivity() {
 
             Log.i("Bluetooth", "Asking to enable bluetooth")
 
-            if (!mBluetoothAdapter?.isEnabled!!) {
-                Handler(Looper.getMainLooper()).postDelayed({
-                    requestBluetooth.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
-                }, 3000)
-            }
+            Handler(Looper.getMainLooper()).postDelayed({
+                requestBluetooth.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+            }, 3000)
         })
 
 
