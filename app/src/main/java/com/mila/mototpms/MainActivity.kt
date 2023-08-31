@@ -103,7 +103,6 @@ class MainActivity : ComponentActivity() {
                 if (result.resultCode == RESULT_OK) {
                     Log.i("Bluetooth", "Enabled")
                     SensorCommServ.serviceInstance?.startScanning()
-                    MotoTPMS.serviceStarted()
                 } else {
                     Log.i("Bluetooth", "Not enabled")
                 }
@@ -429,7 +428,7 @@ fun HomeView(mainViewModel: MainViewModel) {
                 )
             },
             content = {
-                if (isServiceRunning.value == 0) {
+                if (!isServiceRunning.value) {
                     LinearProgressIndicator(
                         modifier = Modifier
                             .padding(top = 54.dp)

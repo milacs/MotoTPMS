@@ -1,7 +1,7 @@
 package com.mila.mototpms
 
 import android.app.Application
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 
 
 class MotoTPMS : Application() {
@@ -15,11 +15,11 @@ class MotoTPMS : Application() {
         }
 
         fun serviceStarted() {
-            isServiceRunning.value = 1
+            isServiceRunning.value = true
         }
 
         var isActivityVisible = false
-        var isServiceRunning = mutableIntStateOf(0)
+        var isServiceRunning = mutableStateOf(false)
         var dataProvider: DataProvider? = null
     }
 }

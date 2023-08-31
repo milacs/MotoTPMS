@@ -207,6 +207,7 @@ class SensorCommServ : Service() {
         val result = super.onStartCommand(intent, flags, startId)
 
         btComm = BluetoothConnectionManager(applicationContext)
+        MotoTPMS.serviceStarted()
 
         return result
     }
