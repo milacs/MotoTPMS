@@ -4,8 +4,10 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -66,6 +68,7 @@ import com.mila.mototpms.ui.theme.MotoTPMSTheme
 import java.text.SimpleDateFormat
 import java.util.Date
 
+
 const val TAG_MAIN = "MainActivity"
 
 class MainActivity : ComponentActivity() {
@@ -82,6 +85,26 @@ class MainActivity : ComponentActivity() {
     private val permissionsRequestCode = 25
     private var mainViewModel : MainViewModel? = null
 
+    private val mBluetoothReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val action = intent.action
+            if (action == BluetoothAdapter.ACTION_STATE_CHANGED) {
+                val state = intent.getIntExtra(
+                    BluetoothAdapter.EXTRA_STATE,
+                    BluetoothAdapter.ERROR
+                )
+                when (state) {
+                    BluetoothAdapter.STATE_OFF -> {
+                        SensorCommServ.stopService(applicationContext)
+                    }
+                    BluetoothAdapter.STATE_ON -> {
+                        SensorCommServ.startService(applicationContext)
+                    }
+                }
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -97,7 +120,6 @@ class MainActivity : ComponentActivity() {
                 Log.i("Bluetooth", "Enabled result arrived")
                 if (result.resultCode == RESULT_OK) {
                     Log.i("Bluetooth", "Enabled")
-                    SensorCommServ.startService(this)
                 } else {
                     Log.i("Bluetooth", "Not enabled")
                 }
@@ -105,9 +127,16 @@ class MainActivity : ComponentActivity() {
 
             Log.i("Bluetooth", "Asking to enable bluetooth")
 
-            Handler(Looper.getMainLooper()).postDelayed({
-                requestBluetooth.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
-            }, 3000)
+            if (mBluetoothAdapter?.isEnabled!!) {
+                SensorCommServ.startService(this)
+            } else {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    requestBluetooth.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+                }, 3000)
+            }
+
+
+            registerReceiver(mBluetoothReceiver, IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED))
         })
 
 
@@ -134,7 +163,7 @@ class MainActivity : ComponentActivity() {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         SensorCommServ.startService(this)
