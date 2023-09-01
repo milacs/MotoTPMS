@@ -4,11 +4,15 @@ import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.app.Service
+import android.appwidget.AppWidgetManager
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.os.PowerManager
 import android.util.Log
 import android.widget.RemoteViews
@@ -23,8 +27,6 @@ private const val CHANNEL_ID = "SensorCommServ"
 private const val CHANNEL_ID_EMERGENCY = "SensorCommServEmergency"
 
 private const val TAG_SERVICE = "SensorCommServ"
-const val PRESSURE_LOW = 28.0
-const val PRESSURE_HIGH = 42.0
 
 
 class SensorCommServ : Service() {
@@ -61,7 +63,8 @@ class SensorCommServ : Service() {
 
                     dataProvider?.saveValues(address, processedData)
                     viewModel?.refreshData()
-                    sendBroadcast(Intent(getString(string.broadcast_update_model)))
+
+                    updateWidget()
 
                     if (!isInteractive() || !MotoTPMS.isActivityVisible) {
 
@@ -88,6 +91,9 @@ class SensorCommServ : Service() {
     }
 
     companion object {
+        const val PRESSURE_LOW = 28.0
+        const val PRESSURE_HIGH = 42.0
+
         var serviceInstance: SensorCommServ? = null
         fun startService(context: Context) {
             val startIntent = Intent(context, SensorCommServ::class.java)
@@ -210,7 +216,29 @@ class SensorCommServ : Service() {
         btComm = BluetoothConnectionManager(applicationContext)
         startScanning()
 
+        updateWidget()
+
         return result
+    }
+
+    private fun updateWidget() {
+
+        var frontAddress = viewModel?.getFrontAddress()?.value
+        var rearAddress = viewModel?.getRearAddress()?.value
+
+        if (frontAddress == "" && rearAddress == "")
+            return
+
+        var intent = Intent(applicationContext, WidgetProvider::class.java)
+        intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+        var ids = AppWidgetManager.getInstance(application)
+            .getAppWidgetIds(ComponentName(application, WidgetProvider::class.java))
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, ids)
+        sendBroadcast(intent)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            updateWidget()
+        }, 60000)
     }
 
     @SuppressLint("MissingPermission")

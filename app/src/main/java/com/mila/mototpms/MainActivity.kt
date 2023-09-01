@@ -218,11 +218,11 @@ fun TyreCard(type : String, mainViewModel : MainViewModel) {
     var borderColor = MaterialTheme.colorScheme.primary
     if (pressure.value != "") {
         val p = pressure.value.toDouble()
-        if (p <= PRESSURE_LOW) {
+        if (p <= SensorCommServ.PRESSURE_LOW) {
             cardBackgroundColor = MaterialTheme.colorScheme.tertiaryContainer
             cartTextColor = MaterialTheme.colorScheme.onTertiaryContainer
             borderColor = MaterialTheme.colorScheme.onTertiaryContainer
-        } else if (p >= PRESSURE_HIGH){
+        } else if (p >= SensorCommServ.PRESSURE_HIGH){
             cardBackgroundColor = MaterialTheme.colorScheme.secondaryContainer
             cartTextColor = MaterialTheme.colorScheme.onSecondaryContainer
             borderColor = MaterialTheme.colorScheme.secondary
@@ -310,10 +310,10 @@ fun TyreCard(type : String, mainViewModel : MainViewModel) {
                 var imageId = drawable.front_no_data
                 if (pressure.value != "") {
                     val p = pressure.value.toDouble()
-                    imageId = if (p <= PRESSURE_LOW) {
+                    imageId = if (p <= SensorCommServ.PRESSURE_LOW) {
                         drawable.front_low
 
-                    } else if (p >= PRESSURE_HIGH){
+                    } else if (p >= SensorCommServ.PRESSURE_HIGH){
                         drawable.front_high
                     } else {
                         drawable.front_normal
@@ -334,9 +334,9 @@ fun TyreCard(type : String, mainViewModel : MainViewModel) {
                 var imageId = drawable.rear_no_data
                 if (pressure.value != "") {
                     val p = pressure.value.toDouble()
-                    imageId = if (p <= PRESSURE_LOW) {
+                    imageId = if (p <= SensorCommServ.PRESSURE_LOW) {
                         drawable.rear_low
-                    } else if (p >= PRESSURE_HIGH){
+                    } else if (p >= SensorCommServ.PRESSURE_HIGH){
                         drawable.rear_high
                     } else {
                         drawable.rear_normal
