@@ -10,9 +10,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.MotionEvent
-import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import kotlin.math.abs
 
 private const val TAG_BT_COMM = "BluetoothConnectionManager"
@@ -682,17 +684,31 @@ class BluetoothConnectionManager(context : Context) {
 
         @SuppressLint("MissingPermission")
         override fun onReceive(context: Context, intent: Intent) {
+            val state = intent.getIntExtra(
+                BluetoothAdapter.EXTRA_STATE,
+                BluetoothAdapter.ERROR
+            )
             when(intent.action) {
                 BluetoothAdapter.ACTION_DISCOVERY_STARTED -> {
-                    Toast.makeText(context, "Bluetooth discovery started", Toast.LENGTH_SHORT).show()
+                    Log.i(TAG_BT_COMM,"Bluetooth discovery started")
                 }
 
                 BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
-                    Toast.makeText(context, "Bluetooth discovery finished: ${pairViewModel.getData().size} devices", Toast.LENGTH_SHORT).show()
+                    Log.i(TAG_BT_COMM, "Bluetooth discovery finished: ${pairViewModel.getData().size} devices")
                 }
 
                 BluetoothAdapter.ACTION_STATE_CHANGED -> {
-                    Toast.makeText(context, "Bluetooth state changed", Toast.LENGTH_SHORT).show()
+                    Log.i(TAG_BT_COMM, "Bluetooth state changed")
+
+                    when (state) {
+                        BluetoothAdapter.STATE_OFF -> {
+                            SensorCommServ.stopService(context)
+                        }
+                        BluetoothAdapter.STATE_ON -> {
+                            SensorCommServ.startService(context)
+                        }
+                    }
+
                 }
 
                 BluetoothDevice.ACTION_FOUND -> {
@@ -746,5 +762,17 @@ class BluetoothConnectionManager(context : Context) {
         context.unregisterReceiver(receiver)
         stopScanning(leScanCallback)
         pairViewModel.clearData()
+    }
+
+    fun turnBluetoothOn(requestBluetooth: ActivityResultLauncher<Intent>) {
+        Log.i(TAG_BT_COMM, "Asking to enable bluetooth")
+
+        if (isBluetoothEnabled() == true) {
+            SensorCommServ.startService(context)
+        } else {
+            Handler(Looper.getMainLooper()).postDelayed({
+                requestBluetooth.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+            }, 3000)
+        }
     }
 }
