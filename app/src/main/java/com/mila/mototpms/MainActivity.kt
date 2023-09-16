@@ -252,17 +252,26 @@ fun TyreCard(type : String, mainViewModel : MainViewModel) {
 
             Text(
                 text = title,
-                modifier = Modifier.padding(bottom = 10.dp),
                 style = TextStyle(
-                    fontSize = 22.sp,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
+                    color = cartTextColor
+                )
+            )
+
+            Text(
+                text = boundAddress.value,
+                modifier = Modifier.padding(bottom = 2.dp),
+                style = TextStyle(
+                    fontSize = 8.sp,
+                    fontWeight = FontWeight.Light,
                     color = cartTextColor
                 )
             )
 
 
             if (boundAddress.value != "") {
-                Log.i(TAG_MAIN, "Bonded address [$type]: $boundAddress")
+                Log.i(TAG_MAIN, "Bound address [$type]: $boundAddress")
                 Row {
                     Text(text = stringResource(id = string.pressure), style = textStyle)
 
@@ -411,13 +420,13 @@ fun HomeView(mainViewModel: MainViewModel) {
                             onClick = { eraseData(mainViewModel) },
                             modifier = Modifier.fillMaxHeight()
                         ) {
-                            Icon(Icons.Filled.Delete, null)
+                            Icon(Icons.Filled.Delete, stringResource(id = string.delete_all_addresses))
                         }
                         IconButton(
                             onClick = { swapSensors(mainViewModel) },
                             modifier = Modifier.fillMaxHeight()
                         ) {
-                            Icon(painterResource(id = drawable.swap_icon), null)
+                            Icon(painterResource(id = drawable.swap_icon), stringResource(id = string.swap_sensors))
                         }
                     }
                 )

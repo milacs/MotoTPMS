@@ -100,8 +100,8 @@
     <string name="nameUnavailable">Nome indisponível</string>
     <string name="signalRSSI">Força de sinal: </string>
     <string name="preference_file_key">com.mila.mototpms.linkedSensors</string>
-    <string name="pair_list_title_front">Selecionar sensor para pneu dianteiro</string>
-    <string name="pair_list_title_rear">Selecionar sensor para pneu traseiro</string>
+    <string name="pair_list_title_front">Selecionar sensor dianteiro</string>
+    <string name="pair_list_title_rear">Selecionar sensor traseiro</string>
     <string name="foreground_notification_title">Serviço MotoTPMS está em execução</string>
     <string name="foreground_notification_message">Toque parar abrir o aplicativo</string>
     <string name="paired_successfully">: sensor pareado com sucesso</string>
@@ -120,8 +120,15 @@
     <string name="pressure_too_high">Pressao muito alta!</string>
     <string name="pressure_warning">Alerta de pressão</string>
     <string name="widget_description">Monitorar pressão dos pneus na tela inicial.</string>
-    <string name="pair_dialog_title">Parear sensor com este pneu?</string>
+    <string name="pair_dialog_title">Associar sensor com este pneu?</string>
     <string name="front_tyre">Dianteiro</string>
     <string name="rear_tyre">Traseiro</string>
     <string name="start_pair_sensor_activity">START_PAIR_DEVICES_LIST</string>
+    <string name="edit_address">Editar endereço</string>
+    <string name="delete_all_addresses">Apagar todos os sensores</string>
+    <string name="swap_sensors">Trocar sensores</string>
+    <string name="enter_address_dialog_title">Digite um endereço MAC</string>
+    <string name="save_button">Salvar</string>
+    <string name="cancel_button">Cancelar</string>
+    <string name="mac_address_hint">Endereço MAC</string>
 </resources>

@@ -68,4 +68,14 @@ class DataProvider(context: Context, name: String, mode: Int) {
             return "rear"
         return ""
     }
+
+    fun saveMacAddress(sensorPosition: String?, macInput: String) {
+        Log.i(TAG_PAIR, "Saving $macInput for ${sensorPosition}Address")
+        editor.putString("${sensorPosition}Address", macInput)
+        val commit = editor.commit()
+
+        if (!commit) {
+            Log.e(TAG_PAIR, "Could not save address for ${sensorPosition}Address")
+        }
+    }
 }

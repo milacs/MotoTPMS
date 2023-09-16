@@ -8,6 +8,8 @@ import android.bluetooth.le.ScanResult
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
+import android.text.InputFilter
+import android.widget.EditText
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,7 +23,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -102,10 +108,10 @@ class PairDevicesList : FragmentActivity() {
 fun ListOfDevices(
     dataProvider: DataProvider,
     devices: MutableList<BluetoothDeviceItem>,
-    sensorPosition: String?
+    sensorPosition: String?,
 ) {
 
-    val context = LocalContext.current as Activity
+    val context = LocalContext.current
 
     val topAppModifier = Modifier
         .height(54.dp)
@@ -140,7 +146,15 @@ fun ListOfDevices(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary)
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary),
+                actions = {
+                    IconButton(
+                        onClick = { typeAddress(context as Activity, dataProvider, sensorPosition) },
+                        modifier = Modifier.fillMaxHeight()
+                    ) {
+                        Icon(Icons.Filled.Create, stringResource(id = string.edit_address))
+                    }
+                }
             )
         },
         content = {
@@ -160,7 +174,12 @@ fun ListOfDevices(
                             shape = RoundedCornerShape(10f)
                         )
                         .clickable {
-                            savePairedDevice(context, dataProvider, sensorPosition, device)
+                            savePairedDevice(
+                                context as Activity,
+                                dataProvider,
+                                sensorPosition,
+                                device
+                            )
                         }
                         .padding(10.dp)
                         .fillMaxWidth(),
@@ -202,6 +221,36 @@ fun ListOfDevices(
             }
         }
     )
+}
+
+fun typeAddress(context: Context, dataProvider: DataProvider, sensorPosition: String?) {
+    val activity = context as Activity
+
+    val editText = EditText(activity)
+
+    val saveButton = { dialog: DialogInterface, _: Int ->
+        val macInput: String = editText.text.toString()
+
+        dataProvider.saveMacAddress(sensorPosition, macInput)
+
+        dialog.dismiss()
+        activity.finish()
+    }
+
+    val cancelButton = { dialog: DialogInterface, _: Int ->
+        dialog.dismiss()
+    }
+
+    editText.setHint(string.mac_address_hint)
+    editText.filters += InputFilter.AllCaps()
+
+    val textInputDialog = AlertDialog.Builder(activity)
+        .setTitle(string.enter_address_dialog_title)
+        .setView(editText)
+        .setPositiveButton(string.save_button, saveButton)
+        .setNegativeButton(string.cancel_button, cancelButton)
+
+    textInputDialog.show()
 }
 
 fun savePairedDevice(context: Context, dataProvider: DataProvider, sensorPosition: String?, device: BluetoothDeviceItem) {
