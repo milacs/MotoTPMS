@@ -42,18 +42,20 @@
         <activity
             android:name="com.mila.mototpms.PairDevicesList"
             android:exported="false"
-            android:theme="@style/Theme.MotoTPMS">
+            android:theme="@style/Theme.MotoTPMS"
+            android:launchMode="singleTop">
             <intent-filter>
-                <action android:name="START_PAIR_DEVICES_LIST" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="START_PAIR_DEVICES_LIST"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity
             android:name="com.mila.mototpms.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.MotoTPMS">
+            android:theme="@style/Theme.MotoTPMS"
+            android:launchMode="singleTop">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -61,7 +63,7 @@
             android:name="com.mila.mototpms.WidgetProvider"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
