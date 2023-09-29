@@ -29,6 +29,7 @@ class BluetoothConnectionManager(context : Context) {
     companion object {
         private val HEX_ARRAY = "0123456789ABCDEF".toCharArray()
         private const val USER_MASK = 65535
+        private const val BLE_SCAN_PERIOD : Long = 15 * 6000
         private var auchCRCHi = byteArrayOf(
             -115,
             113,
@@ -774,5 +775,21 @@ class BluetoothConnectionManager(context : Context) {
                 requestBluetooth.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
             }, 3000)
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun startPeriodicScanning(leScanCallback: ScanCallback) {
+        val scanSettings = android.bluetooth.le.ScanSettings.Builder()
+            .setScanMode(android.bluetooth.le.ScanSettings.SCAN_MODE_LOW_LATENCY)
+            .build()
+
+        bluetoothLeScanner?.startScan(null, scanSettings, leScanCallback)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            stopScanning(leScanCallback)
+
+            bluetoothLeScanner?.startScan(null, scanSettings, leScanCallback)
+        }, BLE_SCAN_PERIOD)
+
     }
 }

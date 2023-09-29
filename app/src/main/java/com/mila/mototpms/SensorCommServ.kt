@@ -254,7 +254,6 @@ class SensorCommServ : Service() {
     private fun createForegroundNotificationChannel() {
         val serviceChannel = NotificationChannelCompat.Builder(CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_DEFAULT)
         serviceChannel.setName(getString(string.foreground_service_notification_channel))
-//            val manager = getSystemService(NotificationManagerCompat::class.java)
         val manager = NotificationManagerCompat.from(applicationContext)
         manager.createNotificationChannel(serviceChannel.build())
     }
@@ -272,7 +271,7 @@ class SensorCommServ : Service() {
             .setScanMode(android.bluetooth.le.ScanSettings.SCAN_MODE_LOW_LATENCY)
             .build()
 
-        btComm!!.startScanning(leScanCallback)
+        btComm!!.startPeriodicScanning(leScanCallback)
     }
 
     fun isInteractive (): Boolean {
