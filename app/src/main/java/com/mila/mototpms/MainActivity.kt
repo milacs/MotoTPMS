@@ -10,7 +10,6 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -48,7 +47,6 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -158,23 +156,23 @@ fun getResultTimestamp(nanos: String, default: String): String {
 
 @Composable
 fun FrontTyreCard(mainViewModel: MainViewModel) {
-    TyreCard(type = "front", mainViewModel )
+    TyreCard(tyre = "front", mainViewModel)
 }
 
 @Composable
 fun RearTyreCard(mainViewModel: MainViewModel) {
-    TyreCard(type = "rear", mainViewModel )
+    TyreCard(tyre = "rear", mainViewModel)
 }
 
 @Composable
-fun TyreCard(type : String, mainViewModel : MainViewModel) {
+fun TyreCard(tyre : String, mainViewModel : MainViewModel) {
     val context = LocalContext.current
-    val pairIntent: Intent = Intent(stringResource(string.start_pair_sensor_activity)).putExtra("sensor_position", type)
+    val pairIntent: Intent = Intent(stringResource(string.start_pair_sensor_activity)).putExtra("sensor_position", tyre)
 
-    val title = if (type=="front") stringResource(id = string.frontTitle) else stringResource(id= string.rearTitle)
+    val title = if (tyre=="front") stringResource(id = string.frontTitle) else stringResource(id= string.rearTitle)
     val boundAddress = remember {
 
-        if (type == "front") {
+        if (tyre == "front") {
             mainViewModel.getFrontAddress()
         } else {
             mainViewModel.getRearAddress()
@@ -182,7 +180,7 @@ fun TyreCard(type : String, mainViewModel : MainViewModel) {
     }
 
     val temperature = remember {
-        if (type == "front") {
+        if (tyre == "front") {
             mainViewModel.getFrontTemperature()
         } else {
             mainViewModel.getRearTemperature()
@@ -190,7 +188,7 @@ fun TyreCard(type : String, mainViewModel : MainViewModel) {
     }
 
     val pressure = remember {
-        if (type == "front") {
+        if (tyre == "front") {
             mainViewModel.getFrontPressure()
         } else {
             mainViewModel.getRearPressure()
@@ -198,7 +196,7 @@ fun TyreCard(type : String, mainViewModel : MainViewModel) {
     }
 
     val nanos = remember {
-        if (type == "front") {
+        if (tyre == "front") {
             mainViewModel.getFrontNanos()
         } else {
             mainViewModel.getRearNanos()
@@ -206,7 +204,7 @@ fun TyreCard(type : String, mainViewModel : MainViewModel) {
     }
 
     val voltage = remember {
-        if (type == "front") {
+        if (tyre == "front") {
             mainViewModel.getFrontVoltage()
         } else {
             mainViewModel.getRearVoltage()
@@ -245,6 +243,9 @@ fun TyreCard(type : String, mainViewModel : MainViewModel) {
         val textStyle = TextStyle(color = cartTextColor,
             fontSize = 17.sp)
 
+        val bigTextStyle = TextStyle(color = cartTextColor,
+            fontSize = 68.sp)
+
         Column(modifier = Modifier
             .align(alignment = Alignment.CenterVertically)
             .fillMaxWidth(0.5f)
@@ -271,17 +272,7 @@ fun TyreCard(type : String, mainViewModel : MainViewModel) {
 
 
             if (boundAddress.value != "") {
-                Log.i(TAG_MAIN, "Bound address [$type]: $boundAddress")
-                Row {
-                    Text(text = stringResource(id = string.pressure), style = textStyle)
-
-                    if (pressure.value != "") {
-                        Text(text = pressure.value, style = textStyle)
-                        Text(text = stringResource(id = string.pressure_unit), style = textStyle, modifier = Modifier.padding(start = 2.dp))
-                    } else {
-                        Text(text = stringResource(id = string.pressure_zero), style = textStyle)
-                    }
-                }
+                Log.i(TAG_MAIN, "Bound address [$tyre]: $boundAddress")
 
                 Row {
                     Text(text = stringResource(id = string.temperature), style = textStyle)
@@ -315,7 +306,7 @@ fun TyreCard(type : String, mainViewModel : MainViewModel) {
             .fillMaxWidth()
             .align(alignment = Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally) {
-            if (type == "front") {
+            if (tyre == "front") {
                 var imageId = drawable.front_no_data
                 if (pressure.value != "") {
                     val p = pressure.value.toDouble()
@@ -329,16 +320,16 @@ fun TyreCard(type : String, mainViewModel : MainViewModel) {
                     }
                 }
 
-                Image(
-                    painter = painterResource(id = imageId),
-                    contentDescription = title,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.8f)
-                        .background(Color.Transparent)
-                        .padding(start = 25.dp))
-                
+                if (boundAddress.value != "") {
+                    Row {
+                        if (pressure.value != "") {
+                            Text(text = pressure.value, style = bigTextStyle)
+                            Text(text = stringResource(id = string.pressure_unit), style = textStyle, modifier = Modifier.padding(start = 2.dp))
+                        } else {
+                            Text(text = stringResource(id = string.pressure_zero), style = textStyle)
+                        }
+                    }
+                }
             } else {
                 var imageId = drawable.rear_no_data
                 if (pressure.value != "") {
@@ -351,16 +342,19 @@ fun TyreCard(type : String, mainViewModel : MainViewModel) {
                         drawable.rear_normal
                     }
                 }
-                Image(
-                    painter = painterResource(id = imageId),
-                    contentDescription = title,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.8f)
-                        .background(Color.Transparent)
-                        .padding(start = 25.dp))
+
+                if (boundAddress.value != "") {
+                    Row {
+                        if (pressure.value != "") {
+                            Text(text = pressure.value, style = bigTextStyle)
+                            Text(text = stringResource(id = string.pressure_unit), style = textStyle, modifier = Modifier.padding(start = 2.dp))
+                        } else {
+                            Text(text = stringResource(id = string.pressure_zero), style = textStyle)
+                        }
+                    }
+                }
             }
+
             Text(text = getResultTimestamp(nanos.value, stringResource(id = string.not_synced_yet)),
                 style = TextStyle(color = MaterialTheme.colorScheme.onPrimaryContainer, fontSize = 12.sp),
                 modifier = Modifier.padding(top = 5.dp))
@@ -440,13 +434,14 @@ fun HomeView(mainViewModel: MainViewModel) {
                             .fillMaxWidth()
                     )
                 }
+
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(top = 64.dp)
                 ) {
-                        FrontTyreCard(mainViewModel)
-                        RearTyreCard(mainViewModel)
+                    FrontTyreCard(mainViewModel)
+                    RearTyreCard(mainViewModel)
                 }
             }
         )
