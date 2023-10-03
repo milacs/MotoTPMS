@@ -10,5 +10,6 @@
     <color name="dart">#333333</color>
     <color name="red">#FF0000</color>
     <color name="orange">#FF6600</color>
+    <color name="green">#30DEA8</color>
     <color name="widget_background_tint">#CC000000</color>
 </resources>

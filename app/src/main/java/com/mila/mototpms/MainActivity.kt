@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +49,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -212,17 +214,15 @@ fun TyreCard(tyre : String, mainViewModel : MainViewModel) {
     }
 
     var cardBackgroundColor = MaterialTheme.colorScheme.primaryContainer
-    var cartTextColor = MaterialTheme.colorScheme.onPrimaryContainer
+
     var borderColor = MaterialTheme.colorScheme.primary
     if (pressure.value != "") {
         val p = pressure.value.toDouble()
         if (p <= SensorCommServ.PRESSURE_LOW) {
             cardBackgroundColor = MaterialTheme.colorScheme.tertiaryContainer
-            cartTextColor = MaterialTheme.colorScheme.onTertiaryContainer
             borderColor = MaterialTheme.colorScheme.onTertiaryContainer
         } else if (p >= SensorCommServ.PRESSURE_HIGH){
             cardBackgroundColor = MaterialTheme.colorScheme.secondaryContainer
-            cartTextColor = MaterialTheme.colorScheme.onSecondaryContainer
             borderColor = MaterialTheme.colorScheme.secondary
         }
     }
@@ -240,37 +240,62 @@ fun TyreCard(tyre : String, mainViewModel : MainViewModel) {
         .padding(15.dp)
         .height(110.dp)) {
 
-        val textStyle = TextStyle(color = cartTextColor,
-            fontSize = 17.sp)
+        TyreCardContent(context, boundAddress, tyre, pressure, temperature, voltage, nanos, title, pairIntent)
+    }
+}
 
-        val bigTextStyle = TextStyle(color = cartTextColor,
-            fontSize = 68.sp)
+@Composable
+fun TyreCardContent(context: Context,
+                    boundAddress: MutableState<String>,
+                    tyre: String,
+                    pressure: MutableState<String>,
+                    temperature: MutableState<String>,
+                    voltage: MutableState<String>,
+                    nanos: MutableState<String>,
+                    title: String,
+                    pairIntent: Intent) {
 
-        Column(modifier = Modifier
-            .align(alignment = Alignment.CenterVertically)
-            .fillMaxWidth(0.5f)
-            .height(110.dp), verticalArrangement = Arrangement.SpaceEvenly) {
+    var cardTextColor = MaterialTheme.colorScheme.onPrimaryContainer
 
+    if (pressure.value != "") {
+        val p = pressure.value.toDouble()
+        if (p <= SensorCommServ.PRESSURE_LOW) {
+            cardTextColor = MaterialTheme.colorScheme.onTertiaryContainer
+        } else if (p >= SensorCommServ.PRESSURE_HIGH){
+            cardTextColor = MaterialTheme.colorScheme.onSecondaryContainer
+        }
+    }
+
+    val textStyle = TextStyle(color = cardTextColor,
+        fontSize = 17.sp)
+
+    Column(modifier = Modifier
+        .fillMaxWidth(0.5f)
+        .height(110.dp), verticalArrangement = Arrangement.SpaceBetween) {
+
+        Column {
             Text(
                 text = title,
                 style = TextStyle(
-                    fontSize = 20.sp,
+                    fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    color = cartTextColor
+                    color = cardTextColor
                 )
             )
 
             Text(
                 text = boundAddress.value,
-                modifier = Modifier.padding(bottom = 2.dp),
+                modifier = Modifier.padding(top=5.dp),
                 style = TextStyle(
-                    fontSize = 8.sp,
+                    fontSize = 10.sp,
                     fontWeight = FontWeight.Light,
-                    color = cartTextColor
+                    color = cardTextColor
                 )
             )
+        }
 
 
+        Column {
             if (boundAddress.value != "") {
                 Log.i(TAG_MAIN, "Bound address [$tyre]: $boundAddress")
 
@@ -301,64 +326,70 @@ fun TyreCard(tyre : String, mainViewModel : MainViewModel) {
                 }
             }
         }
+    }
 
-        Column(modifier= Modifier
-            .fillMaxWidth()
-            .align(alignment = Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            if (tyre == "front") {
-                var imageId = drawable.front_no_data
-                if (pressure.value != "") {
-                    val p = pressure.value.toDouble()
-                    imageId = if (p <= SensorCommServ.PRESSURE_LOW) {
-                        drawable.front_low
+    Column(modifier= Modifier
+        .fillMaxWidth(),
+        horizontalAlignment = Alignment.End) {
+        if (tyre == "front") {
+            var pressureTextColor = cardTextColor
+            if (pressure.value != "") {
+                val p = pressure.value.toDouble()
 
-                    } else if (p >= SensorCommServ.PRESSURE_HIGH){
-                        drawable.front_high
-                    } else {
-                        drawable.front_normal
-                    }
-                }
-
-                if (boundAddress.value != "") {
-                    Row {
-                        if (pressure.value != "") {
-                            Text(text = pressure.value, style = bigTextStyle)
-                            Text(text = stringResource(id = string.pressure_unit), style = textStyle, modifier = Modifier.padding(start = 2.dp))
-                        } else {
-                            Text(text = stringResource(id = string.pressure_zero), style = textStyle)
-                        }
-                    }
-                }
-            } else {
-                var imageId = drawable.rear_no_data
-                if (pressure.value != "") {
-                    val p = pressure.value.toDouble()
-                    imageId = if (p <= SensorCommServ.PRESSURE_LOW) {
-                        drawable.rear_low
-                    } else if (p >= SensorCommServ.PRESSURE_HIGH){
-                        drawable.rear_high
-                    } else {
-                        drawable.rear_normal
-                    }
-                }
-
-                if (boundAddress.value != "") {
-                    Row {
-                        if (pressure.value != "") {
-                            Text(text = pressure.value, style = bigTextStyle)
-                            Text(text = stringResource(id = string.pressure_unit), style = textStyle, modifier = Modifier.padding(start = 2.dp))
-                        } else {
-                            Text(text = stringResource(id = string.pressure_zero), style = textStyle)
-                        }
-                    }
+                pressureTextColor = if (p <= SensorCommServ.PRESSURE_LOW) {
+                    colorResource(id = color.red)
+                } else if (p >= SensorCommServ.PRESSURE_HIGH) {
+                    colorResource(id = color.orange)
+                } else {
+                    colorResource(id = color.green)
                 }
             }
 
-            Text(text = getResultTimestamp(nanos.value, stringResource(id = string.not_synced_yet)),
-                style = TextStyle(color = MaterialTheme.colorScheme.onPrimaryContainer, fontSize = 12.sp),
-                modifier = Modifier.padding(top = 5.dp))
+            val bigTextStyle = TextStyle(color = pressureTextColor,
+                fontSize = 68.sp)
+
+            if (boundAddress.value != "") {
+                Row {
+                    if (pressure.value != "") {
+                        Text(text = pressure.value, style = bigTextStyle)
+                        Text(text = stringResource(id = string.pressure_unit), style = textStyle, modifier = Modifier.padding(start = 2.dp))
+                    } else {
+                        Text(text = stringResource(id = string.pressure_zero), style = textStyle)
+                    }
+                }
+            }
+        } else {
+            var pressureTextColor = cardTextColor
+            if (pressure.value != "") {
+                val p = pressure.value.toDouble()
+
+                pressureTextColor = if (p <= SensorCommServ.PRESSURE_LOW) {
+                    colorResource(id = color.red)
+                } else if (p >= SensorCommServ.PRESSURE_HIGH) {
+                    colorResource(id = color.orange)
+                } else {
+                    colorResource(id = color.green)
+                }
+            }
+
+            val bigTextStyle = TextStyle(color = pressureTextColor,
+                fontSize = 68.sp)
+
+            if (boundAddress.value != "") {
+                Row {
+                    if (pressure.value != "") {
+                        Text(text = pressure.value, style = bigTextStyle)
+                        Text(text = stringResource(id = string.pressure_unit), style = textStyle, modifier = Modifier.padding(start = 2.dp))
+                    } else {
+                        Text(text = stringResource(id = string.pressure_zero), style = textStyle)
+                    }
+                }
+            }
         }
+
+        Text(text = getResultTimestamp(nanos.value, stringResource(id = string.not_synced_yet)),
+            style = TextStyle(color = MaterialTheme.colorScheme.onPrimaryContainer, fontSize = 12.sp),
+            modifier = Modifier.padding(end = 32.dp))
     }
 }
 
