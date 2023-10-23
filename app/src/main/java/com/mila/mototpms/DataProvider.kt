@@ -2,8 +2,11 @@ package com.mila.mototpms
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.SystemClock
 import android.util.Log
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 private const val TAG_DATA_PROVIDER = "DataProvider"
@@ -51,7 +54,19 @@ class DataProvider(context: Context, name: String, mode: Int) {
         saveValue("${address}Pressure", numberFormat.format(processedData?.get("pressure")))
         saveValue("${address}Voltage", numberFormat.format(processedData?.get("voltage")))
         saveValue("${address}ST", processedData?.get("st").toString())
-        saveValue("${address}Nanos", processedData?.get("nanos").toString())
+
+        val timestamp = getResultTimestamp(processedData?.get("nanos").toString())
+        saveValue("${address}Nanos", timestamp)
+    }
+
+    private fun getResultTimestamp(nanos: String): String {
+        if (nanos == "") return R.string.not_synced_yet.toString()
+
+        val timestampMilliseconds = System.currentTimeMillis() -
+                SystemClock.elapsedRealtime() +
+                nanos.toLong() / 1000000
+
+        return SimpleDateFormat("E dd/MM/yy HH:mm:ss").format(Date(timestampMilliseconds))
     }
 
     fun getValue(key: String): String {

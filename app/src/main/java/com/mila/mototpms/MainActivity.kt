@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.SystemClock
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -53,14 +52,13 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.mila.mototpms.R.*
 import com.mila.mototpms.ui.theme.MotoTPMSTheme
-import java.text.SimpleDateFormat
-import java.util.Date
 
 
 const val TAG_MAIN = "MainActivity"
@@ -144,16 +142,6 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
         SensorCommServ.stopService(this)
     }
-}
-
-fun getResultTimestamp(nanos: String, default: String): String {
-    if (nanos == "") return default
-
-    val timestampMilliseconds = System.currentTimeMillis() -
-            SystemClock.elapsedRealtime() +
-            nanos.toLong() / 1000000
-
-    return SimpleDateFormat("E dd/MM/yy HH:mm:ss").format(Date(timestampMilliseconds))
 }
 
 @Composable
@@ -346,7 +334,8 @@ fun TyreCardContent(context: Context,
             }
 
             val bigTextStyle = TextStyle(color = pressureTextColor,
-                fontSize = 68.sp)
+                fontSize = 68.sp,
+                fontFamily = FontFamily.Monospace)
 
             if (boundAddress.value != "") {
                 Row {
@@ -373,7 +362,8 @@ fun TyreCardContent(context: Context,
             }
 
             val bigTextStyle = TextStyle(color = pressureTextColor,
-                fontSize = 68.sp)
+                fontSize = 68.sp,
+                fontFamily = FontFamily.Monospace)
 
             if (boundAddress.value != "") {
                 Row {
@@ -387,7 +377,7 @@ fun TyreCardContent(context: Context,
             }
         }
 
-        Text(text = getResultTimestamp(nanos.value, stringResource(id = string.not_synced_yet)),
+        Text(text = nanos.value,
             style = TextStyle(color = MaterialTheme.colorScheme.onPrimaryContainer, fontSize = 12.sp),
             modifier = Modifier.padding(end = 32.dp))
     }
