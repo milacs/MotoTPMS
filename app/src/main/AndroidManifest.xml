@@ -9,6 +9,14 @@
         android:usesPermissionFlags="neverForLocation" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-feature
         android:name="android.hardware.bluetooth"
@@ -22,6 +30,9 @@
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
 
     <application
         android:name="com.mila.mototpms.MotoTPMS"
@@ -33,11 +44,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MotoTPMS"
-        tools:targetApi="31">
+        tools:targetApi="34">
         <service
             android:name="com.mila.mototpms.SensorCommServ"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="false"
+            android:foregroundServiceType="location" />
 
         <activity
             android:name="com.mila.mototpms.PairDevicesList"

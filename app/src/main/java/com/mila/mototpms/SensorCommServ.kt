@@ -1,6 +1,7 @@
 package com.mila.mototpms
 
 import android.annotation.SuppressLint
+import android.app.Notification
 import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.app.Service
@@ -10,6 +11,7 @@ import android.bluetooth.le.ScanResult
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
@@ -19,8 +21,11 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
-import com.mila.mototpms.R.*
+import com.mila.mototpms.R.color
+import com.mila.mototpms.R.drawable
+import com.mila.mototpms.R.id
+import com.mila.mototpms.R.layout
+import com.mila.mototpms.R.string
 
 
 private const val CHANNEL_ID = "SensorCommServ"
@@ -97,7 +102,8 @@ class SensorCommServ : Service() {
         var serviceInstance: SensorCommServ? = null
         fun startService(context: Context) {
             val startIntent = Intent(context, SensorCommServ::class.java)
-            ContextCompat.startForegroundService(context, startIntent)
+//            ContextCompat.startForegroundService(context, startIntent)
+            context.startForegroundService(startIntent)
         }
 
         fun stopService(context: Context) {
@@ -193,7 +199,7 @@ class SensorCommServ : Service() {
                 PendingIntent.getActivity(this, 0, notificationIntent, FLAG_IMMUTABLE)
             }
 
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+        val notification = Notification.Builder(this, CHANNEL_ID)
             .setContentTitle(getText(string.foreground_notification_title))
             .setContentText(getText(string.foreground_notification_message))
             .setSmallIcon(drawable.ic_launcher_foreground_small)
@@ -201,7 +207,7 @@ class SensorCommServ : Service() {
             .setOngoing(true)
             .build()
 
-        startForeground(1, notification)
+        startForeground(1, notification, FOREGROUND_SERVICE_TYPE_LOCATION)
 
         dataProvider = DataProvider(applicationContext, getString(string.preference_file_key), Context.MODE_PRIVATE)
 
@@ -223,15 +229,15 @@ class SensorCommServ : Service() {
 
     private fun updateWidget() {
 
-        var frontAddress = viewModel?.getFrontAddress()?.value
-        var rearAddress = viewModel?.getRearAddress()?.value
+        val frontAddress = viewModel?.getFrontAddress()?.value
+        val rearAddress = viewModel?.getRearAddress()?.value
 
         if (frontAddress == "" && rearAddress == "")
             return
 
-        var intent = Intent(applicationContext, WidgetProvider::class.java)
+        val intent = Intent(applicationContext, WidgetProvider::class.java)
         intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-        var ids = AppWidgetManager.getInstance(application)
+        val ids = AppWidgetManager.getInstance(application)
             .getAppWidgetIds(ComponentName(application, WidgetProvider::class.java))
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, ids)
         sendBroadcast(intent)

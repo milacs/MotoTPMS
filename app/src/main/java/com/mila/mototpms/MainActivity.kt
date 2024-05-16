@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -57,12 +58,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import com.mila.mototpms.R.*
+import androidx.core.app.ActivityCompat
+import com.mila.mototpms.R.color
+import com.mila.mototpms.R.drawable
+import com.mila.mototpms.R.string
 import com.mila.mototpms.ui.theme.MotoTPMSTheme
 
 
 const val TAG_MAIN = "MainActivity"
 
+@Suppress("DEPRECATION")
 class MainActivity : ComponentActivity() {
 
     private var mBtComm : BluetoothConnectionManager? = null
@@ -71,7 +76,10 @@ class MainActivity : ComponentActivity() {
         Manifest.permission.BLUETOOTH,
         Manifest.permission.BLUETOOTH_SCAN,
         Manifest.permission.BLUETOOTH_CONNECT,
-        Manifest.permission.POST_NOTIFICATIONS
+        Manifest.permission.POST_NOTIFICATIONS,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.FOREGROUND_SERVICE_LOCATION
     )
 
     private val permissionsRequestCode = 25
@@ -97,7 +105,7 @@ class MainActivity : ComponentActivity() {
 
         val managePermissions = ManagePermissions(this, listOfPermissions, permissionsRequestCode)
         managePermissions.checkPermissions(callback = fun() {
-            val requestBluetooth = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 Log.i("Bluetooth", "Enabled result arrived")
                 if (result.resultCode == RESULT_OK) {
                     Log.i("Bluetooth", "Enabled")
@@ -120,7 +128,11 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         mainViewModel?.refreshData()
         MotoTPMS.activityResumed()
-        mBtComm!!.turnBluetoothOn(requestBluetooth)
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        ) {
+            mBtComm!!.turnBluetoothOn(requestBluetooth)
+        }
     }
 
     override fun onPause() {
@@ -134,8 +146,12 @@ class MainActivity : ComponentActivity() {
         permissions: Array<out String>,
         grantResults: IntArray,
     ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        SensorCommServ.startService(this)
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        ) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+            SensorCommServ.startService(this)
+        }
     }
 
     override fun onDestroy() {
@@ -157,7 +173,7 @@ fun RearTyreCard(mainViewModel: MainViewModel) {
 @Composable
 fun TyreCard(tyre : String, mainViewModel : MainViewModel) {
     val context = LocalContext.current
-    val pairIntent: Intent = Intent(stringResource(string.start_pair_sensor_activity)).putExtra("sensor_position", tyre)
+    val pairIntent: Intent = Intent(stringResource(string.start_pair_sensor_activity)).setPackage(context.packageName).putExtra("sensor_position", tyre)
 
     val title = if (tyre=="front") stringResource(id = string.frontTitle) else stringResource(id= string.rearTitle)
     val boundAddress = remember {

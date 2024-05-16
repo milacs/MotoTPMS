@@ -21,7 +21,7 @@ class WidgetProvider : AppWidgetProvider() {
         if (intent?.action == AppWidgetManager.ACTION_APPWIDGET_UPDATE) {
             var appWidgetIds = intent.getParcelableExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, IntArray::class.java)
 
-            viewModel?.refreshData()
+            viewModel.refreshData()
 
             appWidgetIds?.forEach { appWidgetId ->
                 // Create an Intent to launch ExampleActivity.
@@ -32,8 +32,8 @@ class WidgetProvider : AppWidgetProvider() {
                     /* flags = */ PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
 
-                var frontPressure = viewModel?.getFrontPressure()?.value!!
-                var rearPressure = viewModel?.getRearPressure()?.value!!
+                var frontPressure = viewModel.getFrontPressure()?.value!!
+                var rearPressure = viewModel.getRearPressure()?.value!!
 
                 var imageId = R.drawable.rear_no_data_front_no_data
 
