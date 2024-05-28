@@ -92,4 +92,17 @@ class MainViewModel : ViewModel() {
 
         refreshData()
     }
+
+    fun initPreview() {
+        frontAddress.value = "07-51-5C-57-54-44"
+        rearAddress.value = "07-51-5C-57-54-45"
+        frontTemperature.value = "30.0"
+        rearTemperature.value = "38.0"
+        frontPressure.value = "32.2"
+        rearPressure.value = "38.5"
+        frontVoltage.value = "3.2"
+        rearVoltage.value = "3.0"
+        frontNanos.value = "2024-05-25 10:09:53"
+        rearNanos.value = "2024-05-27 10:10:32"
+    }
 }
