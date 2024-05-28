@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Moto TPMS</string>
     <string name="package_name">com.mila.tpms</string>
-    <string name="frontTitle">Pneu dianteiro</string>
-    <string name="rearTitle">Pneu traseiro</string>
+    <string name="frontTitle">Dianteiro</string>
+    <string name="rearTitle">Traseiro</string>
     <string name="pressure">"Pressão: "</string>
     <string name="pressure_unit"> psi</string>
     <string name="temperature">"Temperatura: "</string>

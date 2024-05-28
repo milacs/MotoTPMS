@@ -5,11 +5,13 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -55,6 +57,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -72,6 +75,7 @@ class MainActivity : ComponentActivity() {
 
     private var mBtComm : BluetoothConnectionManager? = null
 
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private val listOfPermissions = listOf(
         Manifest.permission.BLUETOOTH,
         Manifest.permission.BLUETOOTH_SCAN,
@@ -94,6 +98,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -242,7 +247,8 @@ fun TyreCard(tyre : String, mainViewModel : MainViewModel) {
         .background(cardBackgroundColor)
         .clickable { context.startActivity(pairIntent) }
         .padding(15.dp)
-        .height(110.dp)) {
+        .height(110.dp),
+        verticalAlignment = Alignment.CenterVertically) {
 
         TyreCardContent(context, boundAddress, tyre, pressure, temperature, voltage, nanos, title, pairIntent)
     }
@@ -334,7 +340,7 @@ fun TyreCardContent(context: Context,
 
     Column(modifier= Modifier
         .fillMaxWidth(),
-        horizontalAlignment = Alignment.End) {
+        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom) {
         if (tyre == "front") {
             var pressureTextColor = cardTextColor
             if (pressure.value != "") {
@@ -350,7 +356,7 @@ fun TyreCardContent(context: Context,
             }
 
             val bigTextStyle = TextStyle(color = pressureTextColor,
-                fontSize = 68.sp,
+                fontSize = 58.sp,
                 fontFamily = FontFamily.Monospace)
 
             if (boundAddress.value != "") {
@@ -394,9 +400,16 @@ fun TyreCardContent(context: Context,
         }
 
         Text(text = nanos.value,
-            style = TextStyle(color = MaterialTheme.colorScheme.onPrimaryContainer, fontSize = 12.sp),
-            modifier = Modifier.padding(end = 32.dp))
+            style = TextStyle(color = MaterialTheme.colorScheme.onPrimaryContainer, fontSize = 12.sp))
     }
+}
+
+@Preview
+@Composable
+fun HomeViewPreview() {
+    val mvm = MainViewModel()
+    mvm.initPreview()
+    HomeView(mainViewModel = mvm)
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

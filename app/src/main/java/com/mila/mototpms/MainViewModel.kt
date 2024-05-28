@@ -92,4 +92,17 @@ class MainViewModel : ViewModel() {
 
         refreshData()
     }
+
+    fun initPreview() {
+        frontAddress.value = "07-51-5C-57-54-44"
+//        rearAddress.value = MotoTPMS.dataProvider!!.getValue("rearAddress")
+        frontTemperature.value = "30.0"
+//        rearTemperature.value = MotoTPMS.dataProvider!!.getValue("${rearAddress.value}Temperature")
+        frontPressure.value = "32.2"
+//        rearPressure.value = MotoTPMS.dataProvider!!.getValue("${rearAddress.value}Pressure")
+        frontVoltage.value = "3.2"
+//        rearVoltage.value = MotoTPMS.dataProvider!!.getValue("${rearAddress.value}Voltage")
+        frontNanos.value = "2024-05-25 10:09:53"
+//        rearNanos.value = MotoTPMS.dataProvider!!.getValue("${rearAddress.value}Nanos")
+    }
 }
