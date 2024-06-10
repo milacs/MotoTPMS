@@ -75,7 +75,6 @@ class MainActivity : ComponentActivity() {
 
     private var mBtComm : BluetoothConnectionManager? = null
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private val listOfPermissions = listOf(
         Manifest.permission.BLUETOOTH,
         Manifest.permission.BLUETOOTH_SCAN,
@@ -340,10 +339,7 @@ fun TyreCardContent(context: Context,
 
     Column(modifier= Modifier
         .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom) {
-
-        val pressureTextSize = 58.sp
-
+        horizontalAlignment = Alignment.End) {
         if (tyre == "front") {
             var pressureTextColor = cardTextColor
             if (pressure.value != "") {
@@ -359,7 +355,7 @@ fun TyreCardContent(context: Context,
             }
 
             val bigTextStyle = TextStyle(color = pressureTextColor,
-                fontSize = pressureTextSize,
+                fontSize = 68.sp,
                 fontFamily = FontFamily.Monospace)
 
             if (boundAddress.value != "") {
@@ -387,7 +383,7 @@ fun TyreCardContent(context: Context,
             }
 
             val bigTextStyle = TextStyle(color = pressureTextColor,
-                fontSize = pressureTextSize,
+                fontSize = 68.sp,
                 fontFamily = FontFamily.Monospace)
 
             if (boundAddress.value != "") {
@@ -403,7 +399,8 @@ fun TyreCardContent(context: Context,
         }
 
         Text(text = nanos.value,
-            style = TextStyle(color = MaterialTheme.colorScheme.onPrimaryContainer, fontSize = 12.sp))
+            style = TextStyle(color = MaterialTheme.colorScheme.onPrimaryContainer, fontSize = 12.sp),
+            modifier = Modifier.padding(end = 32.dp))
     }
 }
 
