@@ -81,8 +81,7 @@ class MainActivity : ComponentActivity() {
         Manifest.permission.BLUETOOTH_CONNECT,
         Manifest.permission.POST_NOTIFICATIONS,
         Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.FOREGROUND_SERVICE_LOCATION
+        Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
     private val permissionsRequestCode = 25
@@ -355,7 +354,7 @@ fun TyreCardContent(context: Context,
             }
 
             val bigTextStyle = TextStyle(color = pressureTextColor,
-                fontSize = 68.sp,
+                fontSize = 58.sp,
                 fontFamily = FontFamily.Monospace)
 
             if (boundAddress.value != "") {
@@ -383,7 +382,7 @@ fun TyreCardContent(context: Context,
             }
 
             val bigTextStyle = TextStyle(color = pressureTextColor,
-                fontSize = 68.sp,
+                fontSize = 58.sp,
                 fontFamily = FontFamily.Monospace)
 
             if (boundAddress.value != "") {
