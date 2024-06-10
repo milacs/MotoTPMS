@@ -22,7 +22,7 @@ class WidgetProvider : AppWidgetProvider() {
         super.onReceive(context, intent)
 
         if (intent?.action == AppWidgetManager.ACTION_APPWIDGET_UPDATE) {
-            var appWidgetIds = intent.getParcelableExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, IntArray::class.java)
+            val appWidgetIds = intent.getParcelableExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, IntArray::class.java)
 
             viewModel.refreshData()
 
@@ -89,7 +89,7 @@ class WidgetProvider : AppWidgetProvider() {
 
                 // Tell the AppWidgetManager to perform an update on the current
                 // widget.
-                val appWidgetManager = context?.getSystemService<AppWidgetManager>(AppWidgetManager::class.java)
+                val appWidgetManager = context?.getSystemService(AppWidgetManager::class.java)
                 appWidgetManager?.updateAppWidget(appWidgetId, views)
             }
         }

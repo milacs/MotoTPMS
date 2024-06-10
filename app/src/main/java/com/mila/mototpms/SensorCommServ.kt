@@ -61,6 +61,10 @@ class SensorCommServ : Service() {
                     }
                 }
 
+                if (address == null) {
+                    return
+                }
+
                 Log.i(TAG_SERVICE, "Dev: $result")
 
                 if (result.scanRecord != null) {
@@ -76,18 +80,24 @@ class SensorCommServ : Service() {
                         val rearPressure = viewModel?.getRearPressure()?.value
                         val frontPressure = viewModel?.getFrontPressure()?.value
 
-                        if ((frontPressure != null && frontPressure != "")) {
-                            if (frontPressure.toDouble() >= PRESSURE_HIGH)
-                                showEmergencyNotification("frontPressureHigh")
-                            if (frontPressure.toDouble() <= PRESSURE_LOW)
-                                showEmergencyNotification("frontPressureLow")
-                        }
-                        if ((rearPressure != null && rearPressure != "")) {
-                            if (rearPressure.toDouble() >= PRESSURE_HIGH)
-                                showEmergencyNotification("rearPressureHigh")
+                        when(address) {
+                            frontAddress -> {
+                                if ((frontPressure != null && frontPressure != "")) {
+                                    if (frontPressure.toDouble() >= PRESSURE_HIGH)
+                                        showEmergencyNotification("frontPressureHigh")
+                                    if (frontPressure.toDouble() <= PRESSURE_LOW)
+                                        showEmergencyNotification("frontPressureLow")
+                                }
+                            }
+                            rearAddress -> {
+                                if ((rearPressure != null && rearPressure != "")) {
+                                    if (rearPressure.toDouble() >= PRESSURE_HIGH)
+                                        showEmergencyNotification("rearPressureHigh")
 
-                            if (rearPressure.toDouble() <= PRESSURE_LOW)
-                                showEmergencyNotification("rearPressureLow")
+                                    if (rearPressure.toDouble() <= PRESSURE_LOW)
+                                        showEmergencyNotification("rearPressureLow")
+                                }
+                            }
                         }
                     }
                 }
