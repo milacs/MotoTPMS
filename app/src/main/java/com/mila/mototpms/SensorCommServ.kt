@@ -147,8 +147,6 @@ class SensorCommServ : Service() {
         when(config) {
             "frontPressureHigh" -> {
                 builder.color = resources.getColor(color.orange)
-                collapsedView.setColor(id.pressure_alert_collapsed, "setTextColor", color.orange)
-                expandedView.setColor(id.pressure_alert_expanded, "setTextColor", color.orange)
 
                 expandedView.setTextViewText(id.pressure_alert_expanded, getString(string.pressure_too_high))
                 collapsedView.setImageViewResource(id.image_view_collapsed, drawable.front_high)
@@ -157,8 +155,6 @@ class SensorCommServ : Service() {
 
             "frontPressureLow" -> {
                 builder.color = resources.getColor(color.red)
-                collapsedView.setColor(id.pressure_alert_collapsed, "setTextColor", color.red)
-                expandedView.setColor(id.pressure_alert_expanded, "setTextColor", color.red)
 
                 expandedView.setTextViewText(id.pressure_alert_expanded, getString(string.pressure_too_low))
                 collapsedView.setImageViewResource(id.image_view_collapsed, drawable.front_low)
@@ -167,8 +163,6 @@ class SensorCommServ : Service() {
 
             "rearPressureHigh" -> {
                 builder.color = resources.getColor(color.orange)
-                collapsedView.setColor(id.pressure_alert_collapsed, "setTextColor", color.orange)
-                expandedView.setColor(id.pressure_alert_expanded, "setTextColor", color.orange)
                 expandedView.setTextViewText(id.pressure_alert_expanded, getString(string.pressure_too_high))
                 collapsedView.setImageViewResource(id.image_view_collapsed, drawable.rear_high)
                 expandedView.setImageViewResource(id.image_view_expanded, drawable.rear_high)
@@ -176,8 +170,6 @@ class SensorCommServ : Service() {
 
             "rearPressureLow" -> {
                 builder.color = resources.getColor(color.red)
-                collapsedView.setColor(id.pressure_alert_collapsed, "setTextColor", color.red)
-                expandedView.setColor(id.pressure_alert_expanded, "setTextColor", color.red)
                 expandedView.setTextViewText(id.pressure_alert_expanded, getString(string.pressure_too_low))
                 collapsedView.setImageViewResource(id.image_view_collapsed, drawable.rear_low)
                 expandedView.setImageViewResource(id.image_view_expanded, drawable.rear_low)

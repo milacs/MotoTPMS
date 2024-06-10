@@ -131,5 +131,6 @@
     <string name="save_button">Salvar</string>
     <string name="cancel_button">Cancelar</string>
     <string name="mac_address_hint">Endereço MAC</string>
-    <string name="no_sensor_data">No sensor data yet</string>
+    <string name="no_sensor_data">Sem dados de sensor</string>
+    <string name="motorcycle_with_highlighted_wheels">Motocicleta com rodas destacadas</string>
 </resources>

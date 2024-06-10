@@ -10,13 +10,14 @@
         android:textAlignment="viewStart"
         android:padding="8dp"
         android:text="@string/pressure_warning"
-        android:textColor="@color/orange"
-        android:textSize="20dp"
+        android:textColor="@color/white"
+        android:textSize="20sp"
         style="@style/TextAppearance.Compat.Notification"/>
     <ImageView
         android:id="@+id/image_view_expanded"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:contentDescription="@string/motorcycle_with_highlighted_wheels"
         android:src="@drawable/front_no_data"
         style="@style/TextAppearance.Compat.Notification"
         android:scaleType="centerInside"/>
